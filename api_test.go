@@ -21,6 +21,15 @@ func FailWithError(t *testing.T, err error) {
 	t.FailNow()
 }
 
+func TestGetCurrencies(t *testing.T) {
+	fmt.Printf("Getting list of support currencies: ")
+	_, err := GetCurrencies()
+	if err != nil {
+		FailWithError(t, err)
+	}
+	fmt.Println("ok")
+}
+
 func TestExchangeRate(t *testing.T) {
 	fmt.Printf("Getting exchange rate: ")
 	currencies := []string{"btc_to_usd", "usd_to_btc"}

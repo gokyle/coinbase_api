@@ -115,6 +115,22 @@ func GetUnauthenticatedRequest(data interface{}, endpoint string, res interface{
 	return
 }
 
+// GetCurrencies returns a map of supported currencies and their ISO codes.
+func GetCurrencies() (map[string]string, error) {
+	response := make([][]string, 0)
+	endpoint := "currencies"
+	err := GetUnauthenticatedRequest(nil, endpoint, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	currencies := make(map[string]string, 0)
+	for _, element := range response {
+		currencies[element[0]] = element[1]
+	}
+	return currencies, err
+}
+
 // Retrieve exchange rates for a list of currencies.
 func GetExchangeRates(currencies []string) (ExchangeRate, error) {
 	exch := make(ExchangeRate, 0)
