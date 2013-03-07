@@ -15,9 +15,9 @@ type AuthenticatedRequest interface {
 // PostAuthenticatedRequest makes an authenticated JSON POST request to the API.
 // The structure containing the result should be passed into res.
 func PostAuthenticatedRequest(data AuthenticatedRequest, endpoint string, res interface{}) (err error) {
-        if ApiKey == "" {
-                return ErrNotAuthenticated
-        }
+	if ApiKey == "" {
+		return ErrNotAuthenticated
+	}
 	data.SetApiKey()
 
 	request_json_body, err := json.Marshal(data)
@@ -49,9 +49,9 @@ func PostAuthenticatedRequest(data AuthenticatedRequest, endpoint string, res in
 
 // Make an authenticated GET request to the API.
 func GetAuthenticatedRequest(data AuthenticatedRequest, endpoint string, res interface{}) (err error) {
-        if ApiKey == "" {
-                return ErrNotAuthenticated
-        }
+	if ApiKey == "" {
+		return ErrNotAuthenticated
+	}
 	data.SetApiKey()
 	request_json_body, err := json.Marshal(data)
 	if err != nil {
@@ -80,30 +80,70 @@ func GetAuthenticatedRequest(data AuthenticatedRequest, endpoint string, res int
 	return
 }
 
+// Make an unauthenticated GET request.
+func GetUnauthenticatedRequest(data interface{}, endpoint string, res interface{}) (err error) {
+	var req *http.Request
+	if data != nil {
+		var request_json_body []byte
+		request_json_body, err = json.Marshal(data)
+		if err != nil {
+			return
+		}
+		request_body := bytes.NewBuffer(request_json_body)
+		req, err = http.NewRequest("GET", api_base+endpoint, request_body)
+		req.Header.Add("content-type", "application/json")
+	} else {
+		req, err = http.NewRequest("GET", api_base+endpoint, nil)
+	}
+
+	client := &http.Client{}
+	if err != nil {
+		return
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	response_body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	err = json.Unmarshal(response_body, &res)
+	return
+}
+
 // Retrieve exchange rates for a list of currencies.
 func GetExchangeRates(currencies []string) (ExchangeRate, error) {
 	exch := make(ExchangeRate, 0)
-	for _, currency := range currencies {
-		exch[currency] = ""
-	}
-	endpoint := api_base + "currencies/exchange_rates"
-	resp, err := http.Get(endpoint)
-	if err != nil {
-		return exch, err
-	}
-	defer resp.Body.Close()
+	endpoint := "currencies/exchange_rates"
+	err := GetUnauthenticatedRequest(nil, endpoint, &exch)
+	if err == nil {
+		for k, _ := range exch {
+			var keep bool
+			for _, currency := range currencies {
+				if k == currency {
+					keep = true
+					break
+				}
+			}
+			if !keep {
+				delete(exch, k)
+			}
+		}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return exch, err
 	}
-
-	err = json.Unmarshal(body, &exch)
 	return exch, err
 }
 
 // PurchaseBTC attempts to purchase the specified quantity of bitcoins.
 func PurchaseBTC(qty float64) (p *Transaction, err error) {
+	if qty < MinimumPurchase {
+		err = ErrMinimumSubtotal
+		return
+	}
 	pr := new(TransactionRequest)
 	pr.Qty = qty
 
@@ -116,6 +156,10 @@ func PurchaseBTC(qty float64) (p *Transaction, err error) {
 
 // SellBTC attempts to sell the specified quantity of bitcoins.
 func SellBTC(qty float64) (p *Transaction, err error) {
+	if qty < MinimumPurchase {
+		err = ErrMinimumSubtotal
+		return
+	}
 	pr := new(TransactionRequest)
 	pr.Qty = qty
 
@@ -125,8 +169,6 @@ func SellBTC(qty float64) (p *Transaction, err error) {
 	err = PostAuthenticatedRequest(pr, endpoint, &p)
 	return
 }
-
-
 
 // GetAccountBalance retrieves the number of bitcoins in the user's account.
 func GetAccountBalance() (b *Balance, err error) {
@@ -145,5 +187,31 @@ func GetReceiveAddress() (a *ReceiveAddress, err error) {
 
 	a = new(ReceiveAddress)
 	err = GetAuthenticatedRequest(get, endpoint, &a)
+	return
+}
+
+// GetSellPrice returns the total returns from selling a certain number
+// of bitcoins, accounting for transaction fees and market depth.
+func GetSellPrice(qty float64) (b *Balance, err error) {
+	var quantity struct {
+		Qty float64 `json:"qty"`
+	}
+	quantity.Qty = qty
+	endpoint := "prices/sell"
+	b = new(Balance)
+	err = GetUnauthenticatedRequest(quantity, endpoint, &b)
+	return
+}
+
+// GetBuyPrice returns the total cost for purchasing a certain number of
+// bitcoins, accounting for transaction fees and market depth.
+func GetBuyPrice(qty float64) (b *Balance, err error) {
+	var quantity struct {
+		Qty float64 `json:"qty"`
+	}
+	quantity.Qty = qty
+	endpoint := "prices/buy"
+	b = new(Balance)
+	err = GetUnauthenticatedRequest(quantity, endpoint, &b)
 	return
 }

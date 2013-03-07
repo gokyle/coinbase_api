@@ -3,8 +3,8 @@ package coinbase_api
 // This file contains the data types and constants used in the package.
 
 import (
-        "fmt"
-        "strconv"
+	"fmt"
+	"strconv"
 )
 
 // BaseURL for the API
@@ -19,7 +19,8 @@ const MinimumPurchase = 0.10
 
 // A collection of errors returned by the API.
 var (
-        ErrNotAuthenticated = fmt.Errorf("Invalid API key.")
+	ErrNotAuthenticated        = fmt.Errorf("Invalid API key.")
+	ErrMinimumSubtotal         = fmt.Errorf("The minimum subtotal allowed is 0.10 BTC.  Please enter a larger BTC value.")
 	ErrFirstPurchaseIncomplete = fmt.Errorf("Please wait until your first bitcoin purchase completes before making additional purchases")
 	ErrSiteMaxed               = fmt.Errorf("Sorry, the maximum number of purchases on Coinbase has been reached for today.  Please try again in 24 hours.")
 )
@@ -62,8 +63,8 @@ type Balance struct {
 
 // Numeric retrieves the numeric value of a balance.
 func (b *Balance) Numeric() (float64, error) {
-        amount, err := strconv.ParseFloat(b.Amount, 64)
-        return amount, err
+	amount, err := strconv.ParseFloat(b.Amount, 64)
+	return amount, err
 }
 
 // Transaction represents an attempted transaction, whether a purchase

@@ -56,3 +56,21 @@ func TestGetReceiveAddress(t *testing.T) {
 	}
 	fmt.Println("ok")
 }
+
+func TestSellPrice(t *testing.T) {
+	fmt.Printf("Getting sale price for 1 BTC: ")
+	_, err := GetSellPrice(1.00)
+	if err != nil {
+		FailWithError(t, err)
+	}
+	fmt.Println("ok")
+}
+
+func TestBuyPrice(t *testing.T) {
+	fmt.Printf("Getting purchase cost for 1 BTC: ")
+	_, err := GetBuyPrice(1.00)
+	if err != nil {
+		FailWithError(t, err)
+	}
+	fmt.Println("ok")
+}
