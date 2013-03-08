@@ -83,3 +83,12 @@ func TestBuyPrice(t *testing.T) {
 	}
 	fmt.Println("ok")
 }
+
+func TestGetTransactions(t *testing.T) {
+	fmt.Printf("Getting transaction list: ")
+	_, err := GetTransactions(0)
+	if err != nil {
+		FailWithError(t, err)
+	}
+	fmt.Println("ok")
+}

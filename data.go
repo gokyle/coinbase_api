@@ -69,7 +69,7 @@ func (b *Balance) Numeric() (float64, error) {
 
 // Transaction represents an attempted transaction, whether a purchase
 // or sale.
-type Transaction struct {
+type TransactionResult struct {
 	Success  bool     `json:"success"`
 	Errors   []string `json:"errors"`
 	Transfer struct {
@@ -90,4 +90,44 @@ type Transaction struct {
 type ReceiveAddress struct {
 	Address     string `json:"address"`
 	CallbackURL string `json:"callback_url"`
+}
+
+// Type User represents a Coinbase user.
+type User struct {
+	Id    string `json:"id"`
+	Email string `json:"email"`
+	Name  string `json:"name"`
+}
+
+// Type Transaction represents a successful transaction. Due to the way that
+// the Coinbase operates, the transaction data is stored in the T field.
+type Transaction struct {
+	T struct {
+		Id        string  `json:"id"`
+		CreatedAt string  `json:"created_at"`
+		Amount    Balance `json:"amount"`
+		Request   bool    `json:"request"`
+		Status    string  `json:"status"`
+		Sender    User    `json:"string"`
+		Recipient User    `json:"string"`
+	} `json:"transaction"`
+}
+
+// Type TransactionList stores a list of transactions for a user.
+type TransactionList struct {
+	CurrentUser    User          `json:"current_user"`
+	CurrentBalance Balance       `json:"balance"`
+	TotalCount     int           `json:"total_count"`
+	NumPages       int           `json:"num_pages"`
+	CurrentPage    int           `json:"current_pages"`
+	Transactions   []Transaction `json:"transactions"`
+}
+
+type TransactionListRequest struct {
+        Page int `json:"page"`
+        Key string `json:"key"`
+}
+
+func (tlr *TransactionListRequest) SetApiKey() {
+        tlr.Key = ApiKey
 }

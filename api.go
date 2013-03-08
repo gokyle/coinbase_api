@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 // An AuthenticatedRequest needs to have a way to load the API key.
@@ -76,6 +77,9 @@ func GetAuthenticatedRequest(data AuthenticatedRequest, endpoint string, res int
 		return
 	}
 	defer resp.Body.Close()
+
+	tmpFile := strings.Replace(endpoint, "/", "_", -1) + ".json"
+	ioutil.WriteFile(tmpFile, response_body, 0644)
 	err = json.Unmarshal(response_body, &res)
 	return
 }
@@ -155,7 +159,7 @@ func GetExchangeRates(currencies []string) (ExchangeRate, error) {
 }
 
 // PurchaseBTC attempts to purchase the specified quantity of bitcoins.
-func PurchaseBTC(qty float64) (p *Transaction, err error) {
+func PurchaseBTC(qty float64) (p *TransactionResult, err error) {
 	if qty < MinimumPurchase {
 		err = ErrMinimumSubtotal
 		return
@@ -163,7 +167,7 @@ func PurchaseBTC(qty float64) (p *Transaction, err error) {
 	pr := new(TransactionRequest)
 	pr.Qty = qty
 
-	p = new(Transaction)
+	p = new(TransactionResult)
 	endpoint := "buys"
 
 	err = PostAuthenticatedRequest(pr, endpoint, &p)
@@ -171,7 +175,7 @@ func PurchaseBTC(qty float64) (p *Transaction, err error) {
 }
 
 // SellBTC attempts to sell the specified quantity of bitcoins.
-func SellBTC(qty float64) (p *Transaction, err error) {
+func SellBTC(qty float64) (p *TransactionResult, err error) {
 	if qty < MinimumPurchase {
 		err = ErrMinimumSubtotal
 		return
@@ -179,7 +183,7 @@ func SellBTC(qty float64) (p *Transaction, err error) {
 	pr := new(TransactionRequest)
 	pr.Qty = qty
 
-	p = new(Transaction)
+	p = new(TransactionResult)
 	endpoint := "buys"
 
 	err = PostAuthenticatedRequest(pr, endpoint, &p)
@@ -229,5 +233,24 @@ func GetBuyPrice(qty float64) (b *Balance, err error) {
 	endpoint := "prices/buy"
 	b = new(Balance)
 	err = GetUnauthenticatedRequest(quantity, endpoint, &b)
+	return
+}
+
+func GetTransactions(page int) (tl *TransactionList, err error) {
+        var req AuthenticatedRequest
+        if page > 0 {
+                tlr_req := new(TransactionListRequest)
+                if page > 1 {
+                        tlr_req.Page = page
+                } else if page == 0 {
+                        tlr_req.Page = 1
+                }
+                req = tlr_req
+        } else {
+                req = new(GetAuthenticated)
+        }
+	endpoint := "transactions"
+	tl = new(TransactionList)
+	err = GetAuthenticatedRequest(req, endpoint, &tl)
 	return
 }
