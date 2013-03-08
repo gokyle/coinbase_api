@@ -44,6 +44,10 @@ func PostAuthenticatedRequest(data AuthenticatedRequest, endpoint string, res in
 		return
 	}
 	defer resp.Body.Close()
+	if Debug {
+		tmpFile := strings.Replace(endpoint, "/", "_", -1) + ".json"
+		ioutil.WriteFile(tmpFile, response_body, 0644)
+	}
 	err = json.Unmarshal(response_body, &res)
 	return
 }
@@ -78,8 +82,10 @@ func GetAuthenticatedRequest(data AuthenticatedRequest, endpoint string, res int
 	}
 	defer resp.Body.Close()
 
-	tmpFile := strings.Replace(endpoint, "/", "_", -1) + ".json"
-	ioutil.WriteFile(tmpFile, response_body, 0644)
+	if Debug {
+		tmpFile := strings.Replace(endpoint, "/", "_", -1) + ".json"
+		ioutil.WriteFile(tmpFile, response_body, 0644)
+	}
 	err = json.Unmarshal(response_body, &res)
 	return
 }
@@ -115,6 +121,10 @@ func GetUnauthenticatedRequest(data interface{}, endpoint string, res interface{
 		return
 	}
 	defer resp.Body.Close()
+	if Debug {
+		tmpFile := strings.Replace(endpoint, "/", "_", -1) + ".json"
+		ioutil.WriteFile(tmpFile, response_body, 0644)
+	}
 	err = json.Unmarshal(response_body, &res)
 	return
 }
