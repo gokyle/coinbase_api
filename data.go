@@ -111,6 +111,15 @@ type Transaction struct {
 		Sender    User    `json:"string"`
 		Recipient User    `json:"string"`
 	} `json:"transaction"`
+	Success bool   `json:"success"`
+	Error   string `json:"error"`
+}
+
+func (t *Transaction) GetError() (err error) {
+	if t.Error != "" {
+		err = fmt.Errorf(t.Error)
+	}
+	return
 }
 
 // Type TransactionList stores a list of transactions for a user.

@@ -236,6 +236,8 @@ func GetBuyPrice(qty float64) (b *Balance, err error) {
 	return
 }
 
+// GetTransactions returns a list of transaction for the current user.
+// If page > 0, the respective page is loaded.
 func GetTransactions(page int) (tl *TransactionList, err error) {
 	var req AuthenticatedRequest
 	if page > 0 {
@@ -255,10 +257,14 @@ func GetTransactions(page int) (tl *TransactionList, err error) {
 	return
 }
 
+// GetTransaction returns a specific transaction.
 func GetTransaction(id string) (t *Transaction, err error) {
 	endpoint := "/transactions/" + id
 	req := new(GetAuthenticated)
 	t = new(Transaction)
 	err = GetAuthenticatedRequest(req, endpoint, &t)
+	if err == nil {
+		err = t.GetError()
+	}
 	return
 }
