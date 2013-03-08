@@ -22,7 +22,7 @@ func FailWithError(t *testing.T, err error) {
 }
 
 func TestGetCurrencies(t *testing.T) {
-	fmt.Printf("Getting list of support currencies: ")
+	fmt.Printf("Getting list of supported currencies: ")
 	_, err := GetCurrencies()
 	if err != nil {
 		FailWithError(t, err)
@@ -87,6 +87,15 @@ func TestBuyPrice(t *testing.T) {
 func TestGetTransactions(t *testing.T) {
 	fmt.Printf("Getting transaction list: ")
 	_, err := GetTransactions(0)
+	if err != nil {
+		FailWithError(t, err)
+	}
+	fmt.Println("ok")
+}
+
+func TestGetTransaction(t *testing.T) {
+	fmt.Printf("Getting a single transaction: ")
+	_, err := GetTransaction("51382d38aa5add28f8000062")
 	if err != nil {
 		FailWithError(t, err)
 	}

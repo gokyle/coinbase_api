@@ -254,3 +254,11 @@ func GetTransactions(page int) (tl *TransactionList, err error) {
 	err = GetAuthenticatedRequest(req, endpoint, &tl)
 	return
 }
+
+func GetTransaction(id string) (t *Transaction, err error) {
+	endpoint := "/transactions/" + id
+	req := new(GetAuthenticated)
+	t = new(Transaction)
+	err = GetAuthenticatedRequest(req, endpoint, &t)
+	return
+}
