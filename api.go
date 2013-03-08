@@ -259,12 +259,28 @@ func GetTransactions(page int) (tl *TransactionList, err error) {
 
 // GetTransaction returns a specific transaction.
 func GetTransaction(id string) (t *Transaction, err error) {
-	endpoint := "/transactions/" + id
+	endpoint := "transactions/" + id
 	req := new(GetAuthenticated)
-	t = new(Transaction)
-	err = GetAuthenticatedRequest(req, endpoint, &t)
+	tc := new(TransactionContainer)
+	err = GetAuthenticatedRequest(req, endpoint, &tc)
 	if err == nil {
-		err = t.GetError()
+		t = &tc.T
+		err = tc.GetError()
+	}
+	return
+}
+
+// GetUser retrieves the current user information.
+func GetUser() (u *User, err error) {
+	endpoint := "users"
+	req := new(GetAuthenticated)
+	var uc struct {
+		Users []UserContainer `json:"users"`
+	}
+	err = GetAuthenticatedRequest(req, endpoint, &uc)
+	if err == nil {
+		u = &uc.Users[0].U
+		err = uc.Users[0].GetError()
 	}
 	return
 }

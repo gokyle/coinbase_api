@@ -93,7 +93,7 @@ type ReceiveAddress struct {
 }
 
 // Type User represents a Coinbase user.
-type User struct {
+type UserOverview struct {
 	Id    string `json:"id"`
 	Email string `json:"email"`
 	Name  string `json:"name"`
@@ -102,29 +102,31 @@ type User struct {
 // Type Transaction represents a successful transaction. Due to the way that
 // the Coinbase operates, the transaction data is stored in the T field.
 type Transaction struct {
-	T struct {
-		Id        string  `json:"id"`
-		CreatedAt string  `json:"created_at"`
-		Amount    Balance `json:"amount"`
-		Request   bool    `json:"request"`
-		Status    string  `json:"status"`
-		Sender    User    `json:"string"`
-		Recipient User    `json:"string"`
-	} `json:"transaction"`
-	Success bool   `json:"success"`
-	Error   string `json:"error"`
+	Id        string       `json:"id"`
+	CreatedAt string       `json:"created_at"`
+	Amount    Balance      `json:"amount"`
+	Request   bool         `json:"request"`
+	Status    string       `json:"status"`
+	Sender    UserOverview `json:"string"`
+	Recipient UserOverview `json:"string"`
 }
 
-func (t *Transaction) GetError() (err error) {
-	if t.Error != "" {
-		err = fmt.Errorf(t.Error)
+type TransactionContainer struct {
+	T       Transaction `json:"transaction"`
+	Success bool        `json:"success"`
+	Error   string      `json:"error"`
+}
+
+func (tc *TransactionContainer) GetError() (err error) {
+	if tc.Error != "" {
+		err = fmt.Errorf(tc.Error)
 	}
 	return
 }
 
 // Type TransactionList stores a list of transactions for a user.
 type TransactionList struct {
-	CurrentUser    User          `json:"current_user"`
+	CurrentUser    UserOverview  `json:"current_user"`
 	CurrentBalance Balance       `json:"balance"`
 	TotalCount     int           `json:"total_count"`
 	NumPages       int           `json:"num_pages"`
@@ -132,6 +134,8 @@ type TransactionList struct {
 	Transactions   []Transaction `json:"transactions"`
 }
 
+// A TransactionListRequest is used to request the list of transactions for
+// the currently-logged in user.
 type TransactionListRequest struct {
 	Page int    `json:"page"`
 	Key  string `json:"key"`
@@ -139,4 +143,31 @@ type TransactionListRequest struct {
 
 func (tlr *TransactionListRequest) SetApiKey() {
 	tlr.Key = ApiKey
+}
+
+// UserContainer is required due to the way the API returns user results.
+type UserContainer struct {
+	U     User   `json:"user"`
+	Error string `json:"string"`
+}
+
+func (uc *UserContainer) GetError() (err error) {
+	if uc.Error != "" {
+		err = fmt.Errorf(uc.Error)
+	}
+	return
+}
+
+// Type User represents the currently authenticated user.
+type User struct {
+	Id             string  `json:"id"`
+	Name           string  `json:"name"`
+	Email          string  `json:"email"`
+	TimeZone       string  `json:"time_zone"`
+	NativeCurrency string  `json:"native_currency"`
+	CurrentBalance Balance `json:"balance"`
+	BuyLevel       int     `json:"buy_level"`
+	SellLevel      int     `json:"sell_level"`
+	BuyLimit       Balance `json:"buy_limit"`
+	SellLimit      Balance `json:"sell_limit"`
 }

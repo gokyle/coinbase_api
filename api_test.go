@@ -101,3 +101,13 @@ func TestGetTransaction(t *testing.T) {
 	}
 	fmt.Println("ok")
 }
+
+func TestGetUser(t *testing.T) {
+	fmt.Printf("Getting information for the current user: ")
+	_, err := GetUser()
+	fmt.Printf("u: %+v\n", u)
+	if err != nil {
+		FailWithError(t, err)
+	}
+	fmt.Println("ok")
+}
