@@ -1,0 +1,43 @@
+* Account
+[+] GET account/balance
+[+] GET account/receive_address
+[ ] POST account/generate_receive_address
+
+* Buttons
+[ ] POST buttons
+
+* Buys
+[+] POST buys
+
+* Contacts
+[ ] GET contacts
+
+* Currencies
+[+] GET currencies
+[+] GET currencies/exchange_rates
+
+* Prices
+[+] GET prices/buy
+[+] GET prices/sell
+
+* Sells
+[+] POST sells
+
+* Transactions
+[+] GET transactions
+[+] GET transactions/:id
+[ ] POST transactions/send_money
+[ ] POST transactions/request_money
+[ ] PUT transactions/:id/resend_request
+[ ] DELETE transactions/:id/cancel_request
+[ ] PUT transactions/:id/complete_request
+
+* Transfers
+[ ] GET transfers
+
+* Users
+[ ] POST users
+[ ] GET users
+[ ] PUT users/:id
+
+10 / 22 endpoints supported (45% complete)
