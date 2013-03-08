@@ -124,10 +124,10 @@ type TransactionList struct {
 }
 
 type TransactionListRequest struct {
-        Page int `json:"page"`
-        Key string `json:"key"`
+	Page int    `json:"page"`
+	Key  string `json:"key"`
 }
 
 func (tlr *TransactionListRequest) SetApiKey() {
-        tlr.Key = ApiKey
+	tlr.Key = ApiKey
 }

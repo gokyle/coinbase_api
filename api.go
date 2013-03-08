@@ -237,18 +237,18 @@ func GetBuyPrice(qty float64) (b *Balance, err error) {
 }
 
 func GetTransactions(page int) (tl *TransactionList, err error) {
-        var req AuthenticatedRequest
-        if page > 0 {
-                tlr_req := new(TransactionListRequest)
-                if page > 1 {
-                        tlr_req.Page = page
-                } else if page == 0 {
-                        tlr_req.Page = 1
-                }
-                req = tlr_req
-        } else {
-                req = new(GetAuthenticated)
-        }
+	var req AuthenticatedRequest
+	if page > 0 {
+		tlr_req := new(TransactionListRequest)
+		if page > 1 {
+			tlr_req.Page = page
+		} else if page == 0 {
+			tlr_req.Page = 1
+		}
+		req = tlr_req
+	} else {
+		req = new(GetAuthenticated)
+	}
 	endpoint := "transactions"
 	tl = new(TransactionList)
 	err = GetAuthenticatedRequest(req, endpoint, &tl)
