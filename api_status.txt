@@ -37,7 +37,7 @@
 
 * Users
 [ ] POST users
-[ ] GET users
+[X] GET users
 [ ] PUT users/:id
 
-10 / 22 endpoints supported (45% complete)
+11 / 22 endpoints supported (50% complete)
