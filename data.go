@@ -14,6 +14,9 @@ const api_base = "https://coinbase.com/api/v1/"
 // to set it.
 var ApiKey string
 
+// Set to true to dump request JSON files.
+var Debug = false
+
 // The minimum number of bitcoins that may be purchased.
 const MinimumPurchase = 0.10
 

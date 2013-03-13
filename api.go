@@ -194,7 +194,7 @@ func SellBTC(qty float64) (p *TransactionResult, err error) {
 	pr.Qty = qty
 
 	p = new(TransactionResult)
-	endpoint := "buys"
+	endpoint := "sells"
 
 	err = PostAuthenticatedRequest(pr, endpoint, &p)
 	return
